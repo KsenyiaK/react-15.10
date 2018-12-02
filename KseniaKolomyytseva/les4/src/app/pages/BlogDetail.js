@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import BlogDetailStore from '../stores/blogDetailStore';
+import { fetchBlogDetail } from '../actions/blogActions';
 
 import PageTitle from '../components/PageTitle';
 import BlogContent from '../components/BlogContent';
 import Sidebar from '../components/Sidebar';
-import BlogItem from '../components/BlogItem';
-import Pagination from '../components/Pagination';
 import Preloader from '../components/Preloader';
 
 export default class BlogDetail extends Component {
@@ -16,13 +15,25 @@ export default class BlogDetail extends Component {
             data: {}
         };
 
-        axios.get( `https://jsonplaceholder.typicode.com/posts/${ this.props.params.blogId }` )
-            .then( ( response ) => {
-                const { data } = response;
-                this.setState( {
-                    data: data
-                } );
-            } );
+        this.onBlogDetailChange = this.onBlogDetailChange.bind( this );
+    }
+
+    onBlogDetailChange( data ) {
+        this.setState( {
+            data
+        } );
+    }
+
+    componentWillMount() {
+        BlogDetailStore.on( 'change', this.onBlogDetailChange );
+    }
+
+    componentDidMount() {
+        fetchBlogDetail( this.props.params.blogId );
+    }
+
+    componentWillUnmount() {
+        BlogDetailStore.removeListener( 'change', this.onBlogDetailChange );
     }
 
     render() {

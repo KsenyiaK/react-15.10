@@ -6,7 +6,6 @@ import Main from './layouts/Main';
 import Index from './pages/Index';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
-import Comments from './pages/Comments';
 import Users from './pages/Users';
 import Error404 from './pages/Error404';
 
@@ -19,7 +18,6 @@ ReactDOM.render(
             <Route path="blog/" component={ Blog }>
                 <Route path=":blogId" component={ BlogDetail } />
             </Route>
-            <Route path="comments/" component={ Comments }/>
             <Route path="users/" component={ Users }/>
             <Route path="*" component={ Error404 }/>
         </Route>

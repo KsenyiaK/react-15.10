@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { fetchBlogItems } from '../actions/blogActions';
+import BlogStore from '../stores/blogStore';
 
 import PageTitle from '../components/PageTitle';
 import BlogContent from '../components/BlogContent';
@@ -16,13 +17,25 @@ export default class Blog extends Component {
             posts: []
         };
 
-        axios.get( 'https://jsonplaceholder.typicode.com/posts' )
-            .then( ( response ) => {
-                const { data } = response;
-                this.setState( {
-                    posts: data
-                } );
-            } );
+        this.onBlogChange = this.onBlogChange.bind( this );
+    }
+
+    onBlogChange( posts ) {
+        this.setState( {
+            posts
+        } );
+    }
+
+    componentWillMount() {
+        BlogStore.on( 'change', this.onBlogChange );
+    }
+
+    componentDidMount() {
+        fetchBlogItems();
+    }
+
+    componentWillUnmount() {
+        BlogStore.removeListener( 'change', this.onBlogChange );
     }
 
     render() {

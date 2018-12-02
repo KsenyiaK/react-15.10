@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import MenuStore from '../stores/menuStore';
+import { fetchMenu } from '../actions/menuActions';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -18,35 +19,44 @@ export default class Main extends Component {
                 alt: 'Блог'
             },
 
-            menuJson: '../data/menu.json',
-
             menu: []
         };
 
-        axios.get( this.state.menuJson )
-            .then( ( response ) => {
-                const { data } = response;
+        this.onMenuChange = this.onMenuChange.bind( this );
+    }
 
-                const menuItems = data.map( ( item, index ) => {
-                    return (
-                        <MenuItem href={ item.href } key={ index }>{ item.name }</MenuItem>
-                    );
-                } );
+    onMenuChange( menu ) {
+        this.setState( {
+            menu
+        } )
+    }
 
-                this.setState( {
-                    menu: menuItems
-                } );
-            } );
+    componentWillMount() {
+        MenuStore.on( 'change', this.onMenuChange )
+    }
+
+    componentDidMount() {
+        fetchMenu();
+    }
+
+    componentWillUnmount() {
+        MenuStore.removeListener( 'change', this.onMenuChange )
     }
 
     render() {
+        const menuItems = this.state.menu.map( ( item, index ) => {
+            return (
+                <MenuItem href={ item.href } key={ index }>{ item.name }</MenuItem>
+            );
+        } );
+
         return (
             <div id="wrapper" className="clearfix">
                 <Header>
                     <Logo srcLogoStandard={ this.state.logo.standard }
                           srcLogoRetina={ this.state.logo.retina } alt={ this.state.logo.alt }/>
                     <Menu>
-                        { this.state.menu }
+                        { menuItems }
                     </Menu>
                 </Header>
 

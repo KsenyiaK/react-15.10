@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import UsersStore from '../stores/usersStore';
+import { fetchUsers } from '../actions/usersActions';
 
 import PageTitle from '../components/PageTitle';
 import User from '../components/User';
@@ -13,13 +14,25 @@ export default class Users extends Component {
             users: []
         };
 
-        axios.get( 'https://jsonplaceholder.typicode.com/users' )
-            .then( ( response ) => {
-                const { data } = response;
-                this.setState( {
-                    users: data
-                } );
-            } );
+        this.onUsersChange = this.onUsersChange.bind( this );
+    }
+
+    onUsersChange( users ) {
+        this.setState( {
+            users
+        } );
+    }
+
+    componentWillMount() {
+        UsersStore.on( 'change', this.onUsersChange )
+    }
+
+    componentDidMount() {
+        fetchUsers();
+    }
+
+    componentWillUnmount() {
+        UsersStore.removeListener( 'change', this.onUsersChange );
     }
 
     render() {
